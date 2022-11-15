@@ -14,4 +14,7 @@ import uz.androdev.movies.model.model.Movie
 interface MovieRepository {
     @Throws(NoInternetException::class, ServerFailureException::class)
     suspend fun getMovies(query: String, quantity: Int): List<Movie>
+
+    @Throws(Exception::class)
+    suspend fun toggleFavourite(movieId: String)
 }
