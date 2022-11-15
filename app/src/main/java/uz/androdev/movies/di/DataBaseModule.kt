@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import uz.androdev.movies.data.db.AppDatabase
+import uz.androdev.movies.data.db.dao.CommentsDao
 import uz.androdev.movies.data.db.dao.FavoritesDao
 
 /**
@@ -31,5 +32,14 @@ object FavoritesDaoModule {
     @Provides
     fun provideFavoritesDao(appDatabase: AppDatabase): FavoritesDao {
         return appDatabase.favoritesDao
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object CommentsDaoModule {
+    @Provides
+    fun provideCommentsDao(appDatabase: AppDatabase): CommentsDao {
+        return appDatabase.commentsDao
     }
 }

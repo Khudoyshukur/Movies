@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import uz.androdev.movies.data.db.dao.CommentsDao
 import uz.androdev.movies.data.db.dao.FavoritesDao
+import uz.androdev.movies.model.entity.CommentEntity
 import uz.androdev.movies.model.entity.FavoriteEntity
 
 /**
@@ -16,13 +19,16 @@ import uz.androdev.movies.model.entity.FavoriteEntity
 
 @Database(
     entities = [
-        FavoriteEntity::class
+        FavoriteEntity::class,
+        CommentEntity::class
     ],
     exportSchema = true,
     version = 1,
 )
+@TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract val favoritesDao: FavoritesDao
+    abstract val commentsDao: CommentsDao
 
     companion object {
         private const val DATABASE_NAME = "movies.db"
