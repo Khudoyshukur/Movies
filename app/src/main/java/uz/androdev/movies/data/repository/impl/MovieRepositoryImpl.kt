@@ -35,8 +35,7 @@ class MovieRepositoryImpl @Inject constructor(
     private val appDatabase: AppDatabase,
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : MovieRepository {
-    @Throws(NoInternetException::class, ServerFailureException::class)
-    override suspend fun getMovies(query: String, quantity: Int): Flow<PagingData<Movie>> {
+    override fun getMovies(query: String, quantity: Int): Flow<PagingData<Movie>> {
         val factory = { appDatabase.movieDao.getMovies(query = query) }
         val moviesMediator = MoviesMediator(
             appDatabase = appDatabase,
