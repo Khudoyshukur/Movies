@@ -28,6 +28,7 @@ fun MovieWithLikeAndCommentEntity.toMovie(): Movie {
         posterUrl = poster,
         releaseYear = year,
         isLiked = isLiked,
+        type = type,
         numberOfComments = numberOfComments
     )
 }

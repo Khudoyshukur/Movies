@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">Movies</string>
+    <string name="movies">Movies</string>
+    <string name="txt_no_search_parameters">OOPS! NOTHING IS HERE\nSET THE SEARCH PARAMETERS</string>
+    <string name="movie_poster">Movie Poster</string>
+    <string name="toggle_favorite">Toggle Favorite</string>
+    <string name="txt_no_movies">NO MOVIES FOUND FOR THE QUERY\nTRY CHANGING THE QUERY</string>
+    <string name="error_occurred">ERROR OCCURRED\nCHECK YOUR INTERNET CONNECTION</string>
+    <string name="search">Search</string>
+    <string name="title">Title</string>
+    <string name="quantity">Quantity</string>
+    <string name="apply">Apply</string>
+    <string name="fill_field">This field should not be empty</string>
+    <string name="enter_valid_number">Please, enter a valid number</string>
 </resources>

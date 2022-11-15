@@ -9,11 +9,21 @@
         android:id="@+id/moviesFragment"
         android:name="uz.androdev.movies.ui.movie.MoviesFragment"
         android:label="MoviesFragment"
-        tools:layout="@layout/fragment_movies" />
+        tools:layout="@layout/fragment_movies" >
+        <action
+            android:id="@+id/action_moviesFragment_to_searchInputFragment"
+            app:destination="@id/searchInputFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/movieDetailsFragment"
         android:name="uz.androdev.movies.ui.details.MovieDetailsFragment"
         android:label="MovieDetailsFragment"
         tools:layout="@layout/fragment_movie_details" />
+
+    <dialog
+        android:id="@+id/searchInputFragment"
+        tools:layout="@layout/fragment_search_input"
+        android:name="uz.androdev.movies.ui.movie.input.SearchInputFragment"
+        android:label="SearchInputFragment" />
 </navigation>

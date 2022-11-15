@@ -16,6 +16,7 @@ fun MovieDTO.toMovie(isLiked: Boolean, numberOfComments: Int): Movie {
         title = title,
         posterUrl = poster,
         releaseYear = year,
+        type = type,
         isLiked = isLiked,
         numberOfComments = numberOfComments
     )
