@@ -18,7 +18,9 @@ import uz.androdev.movies.model.model.SearchParameter
 import uz.androdev.movies.ui.base.BaseFragment
 import uz.androdev.movies.ui.constant.ExtraBundleName.BUNDLE_SEARCH_PARAMETER
 import uz.androdev.movies.ui.constant.ExtraRequestKey.KEY_SEARCH_PARAMETERS
+import uz.androdev.movies.ui.util.SpaceItemDecoration
 import uz.androdev.movies.ui.util.navigateSafely
+import uz.androdev.movies.ui.util.toastShort
 
 /**
  * Created by: androdev
@@ -35,20 +37,28 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
         super.onViewCreated(view, savedInstanceState)
 
         binding.bindContent(
-            movies = viewModel.movies,
+            uiState = viewModel.uiState,
             processAction = viewModel::processAction
         )
     }
 
     private fun FragmentMoviesBinding.bindContent(
-        movies: Flow<PagingData<Movie>?>,
+        uiState: StateFlow<MoviesUiState>,
         processAction: (MoviesAction) -> Unit
     ) {
         bindAppBar()
 
         bindMovies(
-            movies = movies,
-            onToggleLike = { processAction(MoviesAction.ToggleLike(it)) }
+            movies = uiState.map { it.movies },
+            onToggleFavorite = { processAction(MoviesAction.ToggleFavorite(it)) },
+            onMovieClicked = {}
+        )
+
+        collectEffect(
+            effect = uiState.map { it.effect }.filterNotNull(),
+            onEffectConsumed = {
+                processAction(MoviesAction.EffectConsumed)
+            }
         )
 
         bindResultListeners(
@@ -68,16 +78,29 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
 
     private fun FragmentMoviesBinding.bindMovies(
         movies: Flow<PagingData<Movie>?>,
-        onToggleLike: (Movie) -> Unit
+        onToggleFavorite: (Movie) -> Unit,
+        onMovieClicked: (Movie) -> Unit
     ) {
-        val adapter = MoviesAdapter(onToggleLike)
+        val adapter = MoviesAdapter(
+            onToggleFavorite = onToggleFavorite,
+            onMovieClicked = onMovieClicked
+        )
         rvMovies.adapter = adapter
+
+        // Since we are not supporting remove/edit functionalities
+        // I am not creating a new ItemAnimator.
+        // To remove entire blinking when like clicked,
+        // I am setting itemAnimator to null
+        rvMovies.itemAnimator = null
+        rvMovies.addItemDecoration(
+            SpaceItemDecoration(SpaceItemDecoration.VERTICAL, 16)
+        )
 
         repeatOnViewLifecycle(Lifecycle.State.STARTED) {
             launch {
                 movies
                     .distinctUntilChanged()
-                    .collectLatest{
+                    .collectLatest {
                         if (it == null) {
                             rvMovies.isVisible = false
                             progressBar.isVisible = false
@@ -104,10 +127,22 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
 
                     tvMessage.text = when {
                         isEmpty -> getString(R.string.txt_no_movies)
-                        error -> getString(R.string.error_occurred)
+                        error -> getString(R.string.error_occurred_or_invalid_query)
                         else -> ""
                     }
                 }
+            }
+        }
+    }
+
+    private fun collectEffect(
+        effect: Flow<Effect>,
+        onEffectConsumed: () -> Unit
+    ) {
+        repeatOnViewLifecycle(Lifecycle.State.STARTED) {
+            effect.collect {
+                toastShort(R.string.operation_failed)
+                onEffectConsumed()
             }
         }
     }

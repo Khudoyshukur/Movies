@@ -16,12 +16,13 @@ import uz.androdev.movies.model.model.Movie
  */
 
 class MoviesAdapter(
-    private val toggleLike: (Movie) -> Unit
+    private val onToggleFavorite: (Movie) -> Unit,
+    private val onMovieClicked: (Movie) -> Unit
 ) : PagingDataAdapter<Movie, MoviesAdapter.ViewHolder>(Movie.DIFF_UTIL) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val movie = getItem(position) ?: return
-        holder.bind(movie)
+        holder.bind(movie, onMovieClicked, onToggleFavorite)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,7 +33,11 @@ class MoviesAdapter(
 
     class ViewHolder(private val binding: ItemMovieBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(movie: Movie) = with(movie) {
+        fun bind(
+            movie: Movie,
+            onMovieClicked: (Movie) -> Unit,
+            toggleFavorite: (Movie) -> Unit
+        ) = with(movie) {
             Glide.with(binding.root)
                 .load(posterUrl)
                 .into(binding.imgPoster)
@@ -42,6 +47,9 @@ class MoviesAdapter(
             binding.tctType.text = type
             binding.txtComments.text = numberOfComments.toString()
             binding.btnFavorite.isActivated = isLiked
+
+            binding.root.setOnClickListener { onMovieClicked(movie) }
+            binding.btnFavorite.setOnClickListener { toggleFavorite(movie) }
         }
     }
 }
