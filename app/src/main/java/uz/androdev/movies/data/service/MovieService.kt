@@ -17,6 +17,7 @@ interface MovieService {
     @GET(".")
     suspend fun searchMovies(
         @Query("apikey") apiKey: String = DataLayerConstants.API_KEY,
-        @Query("s") query: String
+        @Query("s") query: String,
+        @Query("page") page: Int,
     ): Response<SearchResponseDTO>
 }

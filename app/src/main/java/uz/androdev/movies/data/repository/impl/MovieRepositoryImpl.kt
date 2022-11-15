@@ -1,21 +1,18 @@
 package uz.androdev.movies.data.repository.impl
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
-import androidx.paging.PagingData
-import androidx.paging.map
+import androidx.paging.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import uz.androdev.movies.data.db.dao.CommentsDao
-import uz.androdev.movies.data.db.dao.FavoritesDao
+import uz.androdev.movies.data.db.AppDatabase
 import uz.androdev.movies.data.error.NoInternetException
 import uz.androdev.movies.data.error.ServerFailureException
+import uz.androdev.movies.data.pagination.MoviesMediator
 import uz.androdev.movies.data.repository.COMMENTS_PAGE_SIZE
+import uz.androdev.movies.data.repository.MOVIES_PAGE_SIZE
 import uz.androdev.movies.data.repository.MovieRepository
 import uz.androdev.movies.data.service.MovieService
-import uz.androdev.movies.data.util.ApiResponse
 import uz.androdev.movies.di.qualifier.IODispatcher
 import uz.androdev.movies.model.entity.CommentEntity
 import uz.androdev.movies.model.entity.FavoriteEntity
@@ -32,48 +29,44 @@ import javax.inject.Inject
  * Email: Khudoyshukur.Juraev.001@mail.ru
  */
 
+@OptIn(ExperimentalPagingApi::class)
 class MovieRepositoryImpl @Inject constructor(
     private val movieService: MovieService,
-    private val favoritesDao: FavoritesDao,
-    private val commentsDao: CommentsDao,
+    private val appDatabase: AppDatabase,
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : MovieRepository {
     @Throws(NoInternetException::class, ServerFailureException::class)
-    override suspend fun getMovies(query: String, quantity: Int): List<Movie> {
-        val response = ApiResponse.handle {
-            movieService.searchMovies(
-                query = query
-            )
-        }
-
-        return when (response) {
-            is ApiResponse.Success -> {
-                withContext(dispatcher) {
-                    response.data.movies.map {
-                        val isLiked = favoritesDao.getFavourite(it.imdbID) != null
-                        val numberOfComments = commentsDao.getNumberOfComments(it.imdbID)
-
-                        it.toMovie(
-                            isLiked = isLiked,
-                            numberOfComments = numberOfComments
-                        )
-                    }
-                }
+    override suspend fun getMovies(query: String, quantity: Int): Flow<PagingData<Movie>> {
+        val factory = { appDatabase.movieDao.getMovies(query = query) }
+        val moviesMediator = MoviesMediator(
+            appDatabase = appDatabase,
+            movieService = movieService,
+            query = query
+        )
+        val pager = Pager(
+            config = PagingConfig(
+                pageSize = MOVIES_PAGE_SIZE,
+                enablePlaceholders = true
+            ),
+            pagingSourceFactory = factory,
+            remoteMediator = moviesMediator
+        )
+        return pager.flow.map { pagingData ->
+            withContext(dispatcher) {
+                pagingData.map { it.toMovie() }
             }
-            is ApiResponse.Exception -> throw NoInternetException()
-            is ApiResponse.Failure -> throw ServerFailureException()
         }
     }
 
     override suspend fun toggleFavourite(movieId: String) {
-        val favouriteEntity = favoritesDao.getFavourite(movieId)
+        val favouriteEntity = appDatabase.favoritesDao.getFavourite(movieId)
 
         if (favouriteEntity == null) {
-            favoritesDao.insertFavorite(
+            appDatabase.favoritesDao.insertFavorite(
                 FavoriteEntity(movieId = movieId)
             )
         } else {
-            favoritesDao.removeFavorite(id = favouriteEntity.id)
+            appDatabase.favoritesDao.removeFavorite(id = favouriteEntity.id)
         }
     }
 
@@ -82,14 +75,14 @@ class MovieRepositoryImpl @Inject constructor(
             movieId = movieId,
             comment = comment
         )
-        commentsDao.insertComment(commentEntity)
+        appDatabase.commentsDao.insertComment(commentEntity)
     }
 
     override fun getComments(movieId: String): Flow<PagingData<Comment>> {
         return Pager(
             PagingConfig(pageSize = COMMENTS_PAGE_SIZE)
         ) {
-            commentsDao.getComments(movieId)
+            appDatabase.commentsDao.getComments(movieId)
         }.flow.map { pagingData ->
             pagingData.map { it.toComment() }
         }

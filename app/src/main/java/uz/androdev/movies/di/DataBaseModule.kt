@@ -9,6 +9,8 @@ import dagger.hilt.components.SingletonComponent
 import uz.androdev.movies.data.db.AppDatabase
 import uz.androdev.movies.data.db.dao.CommentsDao
 import uz.androdev.movies.data.db.dao.FavoritesDao
+import uz.androdev.movies.data.db.dao.MovieDao
+import uz.androdev.movies.data.db.dao.MovieRemoteKeysDao
 
 /**
  * Created by: androdev
@@ -23,6 +25,24 @@ object RoomDatabaseModule {
     @Provides
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
         return AppDatabase.getInstance(context)
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object MovieRemoteKeysDaoModule {
+    @Provides
+    fun provideMovieRemoteKeysDao(appDatabase: AppDatabase): MovieRemoteKeysDao {
+        return appDatabase.movieRemoteKeysDao
+    }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object MoviesDaoModule {
+    @Provides
+    fun provideMovieDao(appDatabase: AppDatabase): MovieDao {
+        return appDatabase.movieDao
     }
 }
 

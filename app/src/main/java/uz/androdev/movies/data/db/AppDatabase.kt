@@ -7,8 +7,12 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import uz.androdev.movies.data.db.dao.CommentsDao
 import uz.androdev.movies.data.db.dao.FavoritesDao
+import uz.androdev.movies.data.db.dao.MovieDao
+import uz.androdev.movies.data.db.dao.MovieRemoteKeysDao
 import uz.androdev.movies.model.entity.CommentEntity
 import uz.androdev.movies.model.entity.FavoriteEntity
+import uz.androdev.movies.model.entity.MovieEntity
+import uz.androdev.movies.model.entity.MovieRemoteKeyEntity
 
 /**
  * Created by: androdev
@@ -20,7 +24,9 @@ import uz.androdev.movies.model.entity.FavoriteEntity
 @Database(
     entities = [
         FavoriteEntity::class,
-        CommentEntity::class
+        CommentEntity::class,
+        MovieEntity::class,
+        MovieRemoteKeyEntity::class
     ],
     exportSchema = true,
     version = 1,
@@ -29,6 +35,8 @@ import uz.androdev.movies.model.entity.FavoriteEntity
 abstract class AppDatabase : RoomDatabase() {
     abstract val favoritesDao: FavoritesDao
     abstract val commentsDao: CommentsDao
+    abstract val movieDao: MovieDao
+    abstract val movieRemoteKeysDao: MovieRemoteKeysDao
 
     companion object {
         private const val DATABASE_NAME = "movies.db"

@@ -16,10 +16,11 @@ import java.io.IOException
  */
 
 const val COMMENTS_PAGE_SIZE = 10
+const val MOVIES_PAGE_SIZE = 10
 
 interface MovieRepository {
     @Throws(NoInternetException::class, ServerFailureException::class)
-    suspend fun getMovies(query: String, quantity: Int): List<Movie>
+    suspend fun getMovies(query: String, quantity: Int): Flow<PagingData<Movie>>
 
     @Throws(IOException::class)
     suspend fun toggleFavourite(movieId: String)
