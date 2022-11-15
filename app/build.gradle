@@ -45,6 +45,9 @@ android {
                 "-Xopt-in=kotlin.RequiresOptIn"
         ]
     }
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 dependencies {
