@@ -46,7 +46,14 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
         uiState: StateFlow<MoviesUiState>,
         processAction: (MoviesAction) -> Unit
     ) {
-        bindAppBar()
+        bindAppBar(
+            onNavigateToSearchInput = {
+                val parameter = uiState.value.searchParameter
+                findNavController().navigateSafely(
+                    MoviesFragmentDirections.actionMoviesFragmentToSearchInputFragment(parameter)
+                )
+            }
+        )
 
         bindMovies(
             movies = uiState.map { it.movies },
@@ -68,11 +75,11 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
         )
     }
 
-    private fun FragmentMoviesBinding.bindAppBar() {
+    private inline fun FragmentMoviesBinding.bindAppBar(
+        crossinline onNavigateToSearchInput: () -> Unit
+    ) {
         toolbar.setNavigationOnClickListener {
-            findNavController().navigateSafely(
-                MoviesFragmentDirections.actionMoviesFragmentToSearchInputFragment()
-            )
+            onNavigateToSearchInput()
         }
     }
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import uz.androdev.movies.R
 import uz.androdev.movies.databinding.FragmentSearchInputBinding
@@ -26,6 +27,8 @@ class SearchInputFragment : BottomSheetDialogFragment() {
     private var _binding: FragmentSearchInputBinding? = null
     private val binding get() = _binding!!
 
+    private val args: SearchInputFragmentArgs by navArgs()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,7 +41,16 @@ class SearchInputFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnApply.setOnClickListener {
+        initUI()
+    }
+
+    private fun initUI() = with(binding) {
+        args.searchParameter?.let {
+            inputTitle.editText?.setText(it.query)
+            inputQuantity.editText?.setText(it.quantity.toString())
+        }
+
+        btnApply.setOnClickListener {
             binding.applySearchParameters()
         }
     }

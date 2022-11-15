@@ -25,5 +25,13 @@
         android:id="@+id/searchInputFragment"
         tools:layout="@layout/fragment_search_input"
         android:name="uz.androdev.movies.ui.movie.input.SearchInputFragment"
-        android:label="SearchInputFragment" />
+        android:label="SearchInputFragment" >
+
+
+        <argument
+            android:name="searchParameter"
+            app:argType="uz.androdev.movies.model.model.SearchParameter"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </dialog>
 </navigation>

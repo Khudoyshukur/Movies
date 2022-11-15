@@ -38,7 +38,7 @@ class MoviesViewModel @Inject constructor(
     }
 
     val uiState = combine(
-        movies, effect, ::MoviesUiState
+        movies, effect, searchParameterState, ::MoviesUiState
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -66,7 +66,8 @@ class MoviesViewModel @Inject constructor(
 
 data class MoviesUiState(
     val movies: PagingData<Movie>? = null,
-    val effect: Effect? = null
+    val effect: Effect? = null,
+    val searchParameter: SearchParameter? = null
 )
 
 sealed interface MoviesAction {
