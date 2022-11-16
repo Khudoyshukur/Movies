@@ -1,10 +1,15 @@
 package uz.androdev.movies.ui.util
 
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
+import uz.androdev.movies.R
+import uz.androdev.movies.ui.constant.UiLayerConstants.MOVIE_PAGE_URL_FORMAT
 
 /**
  * Created by: androdev
@@ -27,4 +32,15 @@ fun Fragment.toastShort(@StringRes resId: Int) {
 
 fun Fragment.toastLong(@StringRes resId: Int) {
     Toast.makeText(requireContext(), resId, Toast.LENGTH_LONG).show()
+}
+
+fun Fragment.openMovieInBrowser(movieId: String) {
+    val url = String.format(MOVIE_PAGE_URL_FORMAT, movieId)
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+
+    try {
+        requireContext().startActivity(intent)
+    } catch (e: ActivityNotFoundException) {
+        toastShort(R.string.operation_failed)
+    }
 }

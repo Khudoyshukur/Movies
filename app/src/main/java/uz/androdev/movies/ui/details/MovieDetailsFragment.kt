@@ -2,17 +2,13 @@ package uz.androdev.movies.ui.details
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.insertFooterItem
 import androidx.paging.map
-import androidx.recyclerview.widget.ConcatAdapter
 import com.bumptech.glide.Glide
-import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -22,6 +18,7 @@ import uz.androdev.movies.model.model.Comment
 import uz.androdev.movies.model.model.MovieDetails
 import uz.androdev.movies.ui.base.BaseFragment
 import uz.androdev.movies.ui.util.SpaceItemDecoration
+import uz.androdev.movies.ui.util.openMovieInBrowser
 import uz.androdev.movies.ui.util.toastShort
 
 /**
@@ -57,7 +54,9 @@ class MovieDetailsFragment :
             onToggleFavorite = {
                 processAction(MovieDetailsAction.ToggleFavorite)
             },
-            onOpenMovie = {}
+            onOpenMovie = {
+                openMovieInBrowser(it.id)
+            }
         )
 
         bindComments(
