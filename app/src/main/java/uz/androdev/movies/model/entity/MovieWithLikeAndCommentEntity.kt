@@ -26,8 +26,8 @@ data class MovieWithLikeAndCommentEntity(
     @ColumnInfo(name = "title")
     val title: String,
 
-    @ColumnInfo(name = "is_liked")
-    val isLiked: Boolean,
+    @ColumnInfo(name = "is_favorite")
+    val isFavorite: Boolean,
 
     @ColumnInfo(name = "number_of_comments")
     val numberOfComments: Int

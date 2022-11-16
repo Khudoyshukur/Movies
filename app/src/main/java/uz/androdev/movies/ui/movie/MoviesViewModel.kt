@@ -3,6 +3,7 @@ package uz.androdev.movies.ui.movie
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -33,7 +34,7 @@ class MoviesViewModel @Inject constructor(
         if (it == null) {
             flowOf(null)
         } else {
-            getMoviesUseCase(it.query)
+            getMoviesUseCase(it.query).cachedIn(viewModelScope)
         }
     }
 

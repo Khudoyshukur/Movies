@@ -60,7 +60,11 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
         bindMovies(
             movies = uiState.map { it.movies },
             onToggleFavorite = { processAction(MoviesAction.ToggleFavorite(it)) },
-            onMovieClicked = {}
+            onMovieClicked = {
+                findNavController().navigateSafely(
+                    MoviesFragmentDirections.actionMoviesFragmentToMovieDetailsFragment(it.id)
+                )
+            }
         )
 
         collectEffect(

@@ -28,7 +28,7 @@ fun MovieWithLikeAndCommentEntity.toMovie(): Movie {
         title = title,
         posterUrl = poster,
         releaseYear = year,
-        isLiked = isLiked,
+        isFavorite = isFavorite,
         type = type,
         numberOfComments = numberOfComments
     )
@@ -40,7 +40,7 @@ fun MovieDetailsEntity.toMovieDetails(): MovieDetails {
         title = title,
         posterUrl = poster,
         releaseYear = year,
-        isLiked = isLiked,
+        isFavorite = isFavorite,
         type = type
     )
 }

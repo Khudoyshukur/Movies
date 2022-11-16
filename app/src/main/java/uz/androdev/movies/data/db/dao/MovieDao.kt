@@ -42,7 +42,7 @@ interface MovieDao {
             (SELECT COUNT(*) FROM favorites WHERE movies.id=favorites.movie_id) > 0
             THEN 1 ELSE 0
             END
-        ) AS is_liked
+        ) AS is_favorite
         FROM movies 
         LEFT JOIN favorites
         ON movies.id = favorites.movie_id
@@ -64,7 +64,7 @@ interface MovieDao {
             (SELECT COUNT(*) FROM favorites WHERE movies.id=favorites.movie_id) > 0
             THEN 1 ELSE 0
             END
-        ) AS is_liked
+        ) AS is_favorite
         FROM movies 
         LEFT JOIN favorites
         ON movies.id = favorites.movie_id

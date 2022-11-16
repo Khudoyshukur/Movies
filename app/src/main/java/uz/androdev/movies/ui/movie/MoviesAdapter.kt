@@ -46,7 +46,7 @@ class MoviesAdapter(
             binding.txtYear.text = releaseYear
             binding.tctType.text = type
             binding.txtComments.text = numberOfComments.toString()
-            binding.btnFavorite.isActivated = isLiked
+            binding.btnFavorite.isActivated = isFavorite
 
             binding.root.setOnClickListener { onMovieClicked(movie) }
             binding.btnFavorite.setOnClickListener { toggleFavorite(movie) }

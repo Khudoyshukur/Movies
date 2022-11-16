@@ -25,6 +25,6 @@ data class MovieDetailsEntity(
     @ColumnInfo(name = "title")
     val title: String,
 
-    @ColumnInfo(name = "is_liked")
-    val isLiked: Boolean
+    @ColumnInfo(name = "is_favorite")
+    val isFavorite: Boolean
 )

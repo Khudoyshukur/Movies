@@ -15,7 +15,7 @@ data class Movie(
     val posterUrl: String?,
     val releaseYear: String,
     val type: String,
-    val isLiked: Boolean,
+    val isFavorite: Boolean,
     val numberOfComments: Int
 ) {
     companion object {
