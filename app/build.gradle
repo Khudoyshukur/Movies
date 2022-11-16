@@ -64,7 +64,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
 
@@ -96,4 +95,11 @@ dependencies {
 
     // ThreeTen (LocalDate)
     implementation 'org.threeten:threetenbp:1.6.0'
+
+    // Unit testing
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    testImplementation "com.github.javafaker:javafaker:0.16"
+    testImplementation 'org.mockito:mockito-core:4.8.0'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
 }
