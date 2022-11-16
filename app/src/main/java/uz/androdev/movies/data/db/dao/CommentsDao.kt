@@ -17,7 +17,7 @@ import uz.androdev.movies.model.entity.CommentEntity
 @Dao
 interface CommentsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertComment(commentEntity: CommentEntity)
+    suspend fun insertComment(commentEntity: CommentEntity): Long
 
     @Query("SELECT COUNT(*) FROM comments WHERE movie_id=:movieId")
     suspend fun getNumberOfComments(movieId: String): Int

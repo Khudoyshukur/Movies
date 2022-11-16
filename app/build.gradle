@@ -102,4 +102,12 @@ dependencies {
     testImplementation "com.github.javafaker:javafaker:0.16"
     testImplementation 'org.mockito:mockito-core:4.8.0'
     testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+
+    // Instrumentation testing
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    androidTestImplementation "com.github.javafaker:javafaker:0.16"
+    androidTestImplementation 'org.mockito:mockito-android:4.8.0'
+    androidTestImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+    androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptAndroidTest "com.google.dagger:hilt-android-compiler:$hilt_version"
 }

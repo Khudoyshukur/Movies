@@ -1,5 +1,6 @@
 package uz.androdev.movies.model.entity
 
+import androidx.recyclerview.widget.DiffUtil.ItemCallback
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
@@ -32,4 +33,19 @@ data class CommentEntity(
 
     @ColumnInfo(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now()
-)
+) {
+    companion object {
+        val DIFF_UTIL = object : ItemCallback<CommentEntity>() {
+            override fun areItemsTheSame(oldItem: CommentEntity, newItem: CommentEntity): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(
+                oldItem: CommentEntity,
+                newItem: CommentEntity
+            ): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
+}
