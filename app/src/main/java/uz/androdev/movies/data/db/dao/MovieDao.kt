@@ -47,9 +47,10 @@ interface MovieDao {
         LEFT JOIN favorites
         ON movies.id = favorites.movie_id
         WHERE search_query=:query
+        LIMIT :limit
     """
     )
-    fun getMovies(query: String): PagingSource<Int, MovieWithLikeAndCommentEntity>
+    fun getMovies(query: String, limit: Int): PagingSource<Int, MovieWithLikeAndCommentEntity>
 
     @Query(
         """

@@ -37,7 +37,12 @@ class MovieRepositoryImpl @Inject constructor(
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : MovieRepository {
     override fun getMovies(searchParameter: SearchParameter): Flow<PagingData<Movie>> {
-        val factory = { appDatabase.movieDao.getMovies(query = searchParameter.query) }
+        val factory = {
+            appDatabase.movieDao.getMovies(
+                query = searchParameter.query,
+                limit = searchParameter.numberOfPages * MOVIES_PAGE_SIZE
+            )
+        }
         val moviesMediator = MoviesMediator(
             appDatabase = appDatabase,
             movieService = movieService,
