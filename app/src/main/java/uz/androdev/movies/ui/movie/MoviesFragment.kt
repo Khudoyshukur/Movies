@@ -69,7 +69,7 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
         )
 
         collectEffect(
-            effect = uiState.map { it.effect }.filterNotNull(),
+            moviesEffect = uiState.map { it.moviesEffect }.filterNotNull(),
             onEffectConsumed = {
                 processAction(MoviesAction.EffectConsumed)
             }
@@ -158,11 +158,11 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
     }
 
     private fun collectEffect(
-        effect: Flow<Effect>,
+        moviesEffect: Flow<MoviesEffect>,
         onEffectConsumed: () -> Unit
     ) {
         repeatOnViewLifecycle(Lifecycle.State.STARTED) {
-            effect.collect {
+            moviesEffect.collect {
                 toastShort(R.string.operation_failed)
                 onEffectConsumed()
             }

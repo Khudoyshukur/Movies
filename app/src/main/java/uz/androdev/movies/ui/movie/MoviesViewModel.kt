@@ -29,7 +29,7 @@ class MoviesViewModel @Inject constructor(
     private val toggleFavoriteMovieUseCase: ToggleFavoriteMovieUseCase
 ) : ViewModel() {
     private val searchParameterState = MutableStateFlow<SearchParameter?>(null)
-    private val effect = MutableStateFlow<Effect?>(null)
+    private val moviesEffect = MutableStateFlow<MoviesEffect?>(null)
     val movies = searchParameterState.flatMapLatest {
         if (it == null) {
             flowOf(PagingData.empty())
@@ -39,7 +39,7 @@ class MoviesViewModel @Inject constructor(
     }.cachedIn(viewModelScope)
 
     val uiState = combine(
-        movies, effect, searchParameterState, ::MoviesUiState
+        movies, moviesEffect, searchParameterState, ::MoviesUiState
     ).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
@@ -50,7 +50,7 @@ class MoviesViewModel @Inject constructor(
         when (action) {
             is MoviesAction.SetSearchParameter -> searchParameterState.update { action.searchParameter }
             is MoviesAction.ToggleFavorite -> toggleFavorite(action.movie)
-            MoviesAction.EffectConsumed -> effect.update { null }
+            MoviesAction.EffectConsumed -> moviesEffect.update { null }
         }
     }
 
@@ -59,7 +59,7 @@ class MoviesViewModel @Inject constructor(
             val resp = toggleFavoriteMovieUseCase(movie.id)
 
             resp.onFailure {
-                effect.emit(Effect.ToggleLikeFailed)
+                moviesEffect.emit(MoviesEffect.ToggleLikeFailed)
             }
         }
     }
@@ -67,7 +67,7 @@ class MoviesViewModel @Inject constructor(
 
 data class MoviesUiState(
     val movies: PagingData<Movie> = PagingData.empty(),
-    val effect: Effect? = null,
+    val moviesEffect: MoviesEffect? = null,
     val searchParameter: SearchParameter? = null
 )
 
@@ -77,6 +77,6 @@ sealed interface MoviesAction {
     object EffectConsumed : MoviesAction
 }
 
-sealed interface Effect {
-    object ToggleLikeFailed : Effect
+sealed interface MoviesEffect {
+    object ToggleLikeFailed : MoviesEffect
 }
