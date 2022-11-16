@@ -1,9 +1,15 @@
 package uz.androdev.movies.repository
 
+import android.view.View
+import android.view.ViewGroup
+import androidx.paging.*
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -14,9 +20,13 @@ import org.mockito.kotlin.*
 import uz.androdev.movies.data.db.AppDatabase
 import uz.androdev.movies.data.repository.impl.MovieRepositoryImpl
 import uz.androdev.movies.data.service.MovieService
+import uz.androdev.movies.factory.CommentFactory
 import uz.androdev.movies.factory.FavoriteFactory
 import uz.androdev.movies.factory.MovieDetailsFactory
+import uz.androdev.movies.model.entity.CommentEntity
+import uz.androdev.movies.model.mapper.toComment
 import uz.androdev.movies.model.mapper.toMovieDetails
+import uz.androdev.movies.model.model.Comment
 import java.util.*
 
 /**
@@ -57,7 +67,7 @@ class TestMovieRepositoryImpl {
         val resp = repository.getMovieDetails(movieId)
 
         assertEquals(resp.first(), details.toMovieDetails())
-        Mockito.verify(appDatabase.movieDao.getMoviesDetails(eq(movieId)))
+        Mockito.verify(appDatabase.movieDao).getMoviesDetails(eq(movieId))
     }
 
     @Test
@@ -102,9 +112,54 @@ class TestMovieRepositoryImpl {
 
     @Test
     fun getComments_shouldGetCommentsFromDatabase() = runTest {
-        val movieId = UUID.randomUUID().toString()
-        repository.getComments(movieId)
+        val commentEntities = List(3) {
+            CommentFactory.createCommentEntity()
+        }
 
-        Mockito.verify(appDatabase.commentsDao).getComments(eq(movieId))
+        val pagingSource = object : PagingSource<Int, CommentEntity>() {
+            override fun getRefreshKey(state: PagingState<Int, CommentEntity>): Int? {
+                return null
+            }
+
+            override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CommentEntity> {
+                return LoadResult.Page(commentEntities, null, null)
+            }
+        }
+        whenever(appDatabase.commentsDao.getComments(any()))
+            .thenReturn(pagingSource)
+
+        val movieId = UUID.randomUUID().toString()
+        val resp = repository.getComments(movieId)
+        val job = launch(UnconfinedTestDispatcher()) {
+            resp.collectLatest {
+                val comments = it.collectData()
+                assertEquals(comments.map { it.id }, commentEntities.map { it.id })
+            }
+        }
+        job.cancel()
+    }
+
+    suspend fun <T : Any> PagingData<T>.collectData(): List<T> {
+        val dcb = object : DifferCallback {
+            override fun onChanged(position: Int, count: Int) {}
+            override fun onInserted(position: Int, count: Int) {}
+            override fun onRemoved(position: Int, count: Int) {}
+        }
+        val items = mutableListOf<T>()
+        val dif = object : PagingDataDiffer<T>(dcb, UnconfinedTestDispatcher()) {
+            override suspend fun presentNewList(
+                previousList: NullPaddedList<T>,
+                newList: NullPaddedList<T>,
+                lastAccessedIndex: Int,
+                onListPresentable: () -> Unit
+            ): Int? {
+                for (idx in 0 until newList.size)
+                    items.add(newList.getFromStorage(idx))
+                onListPresentable()
+                return null
+            }
+        }
+        dif.collectFrom(this)
+        return items
     }
 }
