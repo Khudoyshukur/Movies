@@ -1,6 +1,5 @@
 package uz.androdev.movies.ui.movie
 
-import android.icu.text.CaseMap.Title
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -9,6 +8,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -104,7 +104,10 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
         val adapter = MoviesAdapter(
             onToggleFavorite = onToggleFavorite,
             onMovieClicked = onMovieClicked
-        )
+        ).also {
+            it.stateRestorationPolicy =
+                RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        }
         rvMovies.adapter = adapter
 
         // Since we are not supporting remove/edit functionalities

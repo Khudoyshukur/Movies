@@ -46,8 +46,6 @@ interface MovieDao {
         FROM movies 
         LEFT JOIN favorites
         ON movies.id = favorites.movie_id
-        LEFT JOIN comments
-        ON movies.id = comments.movie_id
         WHERE search_query=:query
     """
     )

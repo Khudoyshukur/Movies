@@ -6,9 +6,13 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.paging.LoadState
 import androidx.paging.PagingData
+import androidx.paging.insertFooterItem
+import androidx.paging.map
 import androidx.recyclerview.widget.ConcatAdapter
 import com.bumptech.glide.Glide
+import com.google.android.material.transition.MaterialFadeThrough
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -34,6 +38,7 @@ class MovieDetailsFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        postponeEnterTransition()
 
         binding.bindContent(
             uiState = viewModel.uiState,
@@ -97,6 +102,8 @@ class MovieDetailsFragment :
                     btnFavorite.isActivated = details.isFavorite
 
                     txtImdb.setOnClickListener { onOpenMovie(details) }
+
+                    startPostponedEnterTransition()
                 }
         }
     }
@@ -105,19 +112,28 @@ class MovieDetailsFragment :
         commentsFlow: Flow<PagingData<Comment>?>,
         onInsertComment: (content: String) -> Unit
     ) {
-        val commentsAdapter = CommentsAdapter()
-        val commentInsertionAdapter = CommentInsertionAdapter(onInsertComment)
-
-        rvComments.adapter = ConcatAdapter(commentsAdapter, commentInsertionAdapter)
+        val commentsAdapter = CommentsAdapter(onInsertComment)
+        rvComments.adapter = commentsAdapter
         rvComments.addItemDecoration(
-            SpaceItemDecoration(SpaceItemDecoration.VERTICAL, 16)
+            SpaceItemDecoration(SpaceItemDecoration.VERTICAL, 16).also {
+                it.setInitialOffset(6)
+            }
         )
 
         repeatOnViewLifecycle(Lifecycle.State.STARTED) {
-            commentsFlow
-                .filterNotNull()
-                .distinctUntilChanged()
-                .collectLatest(commentsAdapter::submitData)
+            launch {
+                commentsFlow
+                    .filterNotNull()
+                    .distinctUntilChanged()
+                    .collectLatest { data ->
+                        val mapper: (Comment) -> CommentModel = { CommentModel.UiComment(it) }
+                        val models: PagingData<CommentModel> = data.map(mapper)
+
+                        commentsAdapter.submitData(
+                            models.insertFooterItem(item = CommentModel.UiCommentInsertion)
+                        )
+                    }
+            }
         }
     }
 

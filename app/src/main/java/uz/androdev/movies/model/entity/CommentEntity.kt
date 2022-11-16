@@ -16,7 +16,7 @@ import org.threeten.bp.LocalDateTime
 @Entity(
     tableName = "comments",
     indices = [
-        Index("movie_id", unique = true)
+        Index("movie_id", unique = false)
     ]
 )
 data class CommentEntity(

@@ -30,13 +30,13 @@ class MoviesViewModel @Inject constructor(
 ) : ViewModel() {
     private val searchParameterState = MutableStateFlow<SearchParameter?>(null)
     private val effect = MutableStateFlow<Effect?>(null)
-    private val movies = searchParameterState.flatMapLatest {
+    val movies = searchParameterState.flatMapLatest {
         if (it == null) {
-            flowOf(null)
+            flowOf(PagingData.empty())
         } else {
-            getMoviesUseCase(it.query).cachedIn(viewModelScope)
+            getMoviesUseCase(it.query)
         }
-    }
+    }.cachedIn(viewModelScope)
 
     val uiState = combine(
         movies, effect, searchParameterState, ::MoviesUiState
@@ -66,7 +66,7 @@ class MoviesViewModel @Inject constructor(
 }
 
 data class MoviesUiState(
-    val movies: PagingData<Movie>? = null,
+    val movies: PagingData<Movie> = PagingData.empty(),
     val effect: Effect? = null,
     val searchParameter: SearchParameter? = null
 )

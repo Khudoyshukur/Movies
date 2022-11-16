@@ -32,7 +32,7 @@ class MoviesMediator(
             val page = when (loadType) {
                 LoadType.REFRESH -> {
                     val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-                    remoteKeys?.next?.minus(1) ?: 1
+                    remoteKeys?.next?.minus(1) ?: 0
                 }
                 LoadType.PREPEND -> {
                     val remoteKeys = getRemoteKeyForFirstItem(state)
@@ -60,7 +60,7 @@ class MoviesMediator(
 
             val movies = movieService.searchMovies(
                 query = query,
-                page = page
+                page = page + 1
             ).body()!!.movies
 
             val endOfPagination = movies.isEmpty()

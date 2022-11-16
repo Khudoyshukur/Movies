@@ -18,9 +18,9 @@ import javax.inject.Inject
 class GetMovieDetailsUseCase @Inject constructor(
     private val movieRepository: MovieRepository
 ) {
-    operator fun invoke(movieId: String): UseCaseResponse<Flow<MovieDetails>, UnitFailure> {
+    operator fun invoke(movieId: String): UseCaseResponse<Flow<MovieDetails?>, UnitFailure> {
         return try {
-            val details = movieRepository.getMovieDetails(movieId).map { it!! }
+            val details = movieRepository.getMovieDetails(movieId).map { it }
             UseCaseResponse.Success(details)
         } catch (t: Throwable) {
             UseCaseResponse.Failure(UnitFailure)
