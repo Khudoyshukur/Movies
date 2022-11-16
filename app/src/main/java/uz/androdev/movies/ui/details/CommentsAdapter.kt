@@ -9,6 +9,7 @@ import uz.androdev.movies.R
 import uz.androdev.movies.databinding.ItemCommentBinding
 import uz.androdev.movies.databinding.ItemCommentInsertionBinding
 import uz.androdev.movies.model.model.Comment
+import uz.androdev.movies.ui.constant.UiLayerConstants.COMMENT_DATE_TIME_FORMAT
 
 /**
  * Created by: androdev
@@ -52,7 +53,7 @@ class CommentsAdapter(
 
     class CommentViewHolder(private val binding: ItemCommentBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        private val formatter = DateTimeFormatter.ISO_DATE_TIME
+        private val formatter = DateTimeFormatter.ofPattern(COMMENT_DATE_TIME_FORMAT)
 
         fun bind(comment: Comment) = with(comment) {
             binding.tvComment.text = content

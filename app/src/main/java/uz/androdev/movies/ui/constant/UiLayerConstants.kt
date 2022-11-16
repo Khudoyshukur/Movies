@@ -8,6 +8,7 @@ package uz.androdev.movies.ui.constant
  */
 
 object UiLayerConstants {
+    const val COMMENT_DATE_TIME_FORMAT = "MMM dd, yyyy hh:mm"
 
     // %s here is a movie id (IMDb)
     const val MOVIE_PAGE_URL_FORMAT = "https://www.imdb.com/title/%s/"
