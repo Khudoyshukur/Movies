@@ -16,7 +16,7 @@ import uz.androdev.movies.model.entity.FavoriteEntity
 @Dao
 interface FavoritesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFavorite(favoriteEntity: FavoriteEntity)
+    suspend fun insertFavorite(favoriteEntity: FavoriteEntity): Long
 
     @Query("DELETE FROM favorites WHERE id=:id")
     suspend fun removeFavorite(id: Long)
