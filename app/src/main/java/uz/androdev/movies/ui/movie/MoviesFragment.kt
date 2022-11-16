@@ -1,5 +1,6 @@
 package uz.androdev.movies.ui.movie
 
+import android.icu.text.CaseMap.Title
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -47,6 +48,7 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
         processAction: (MoviesAction) -> Unit
     ) {
         bindAppBar(
+            title = uiState.map { it.searchParameter?.query },
             onNavigateToSearchInput = {
                 val parameter = uiState.value.searchParameter
                 findNavController().navigateSafely(
@@ -76,10 +78,17 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
     }
 
     private inline fun FragmentMoviesBinding.bindAppBar(
+        title: Flow<String?>,
         crossinline onNavigateToSearchInput: () -> Unit
     ) {
         toolbar.setNavigationOnClickListener {
             onNavigateToSearchInput()
+        }
+
+        repeatOnViewLifecycle(Lifecycle.State.STARTED) {
+            title.distinctUntilChanged().collect {
+                toolbar.title = it ?: getString(R.string.movies)
+            }
         }
     }
 

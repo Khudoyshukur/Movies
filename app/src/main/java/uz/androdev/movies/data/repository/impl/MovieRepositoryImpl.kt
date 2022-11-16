@@ -6,8 +6,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import uz.androdev.movies.data.db.AppDatabase
-import uz.androdev.movies.data.error.NoInternetException
-import uz.androdev.movies.data.error.ServerFailureException
 import uz.androdev.movies.data.pagination.MoviesMediator
 import uz.androdev.movies.data.repository.COMMENTS_PAGE_SIZE
 import uz.androdev.movies.data.repository.MOVIES_PAGE_SIZE
@@ -72,7 +70,7 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun insertComment(comment: String, movieId: String) {
         val commentEntity = CommentEntity(
             movieId = movieId,
-            comment = comment
+            content = comment
         )
         appDatabase.commentsDao.insertComment(commentEntity)
     }

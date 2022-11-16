@@ -27,8 +27,8 @@ data class CommentEntity(
     @ColumnInfo(name = "movie_id")
     val movieId: String,
 
-    @ColumnInfo(name = "comment")
-    val comment: String,
+    @ColumnInfo(name = "content")
+    val content: String,
 
     @ColumnInfo(name = "created_at")
     val createdAt: LocalDateTime = LocalDateTime.now()

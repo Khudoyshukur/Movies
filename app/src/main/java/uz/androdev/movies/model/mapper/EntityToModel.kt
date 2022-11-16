@@ -1,7 +1,6 @@
 package uz.androdev.movies.model.mapper
 
 import uz.androdev.movies.model.entity.CommentEntity
-import uz.androdev.movies.model.entity.MovieEntity
 import uz.androdev.movies.model.entity.MovieWithLikeAndCommentEntity
 import uz.androdev.movies.model.model.Comment
 import uz.androdev.movies.model.model.Movie
@@ -16,7 +15,7 @@ import uz.androdev.movies.model.model.Movie
 fun CommentEntity.toComment(): Comment {
     return Comment(
         id = id,
-        comment = comment,
+        content = content,
         createdAt = createdAt
     )
 }

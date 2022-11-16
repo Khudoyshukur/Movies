@@ -1,5 +1,6 @@
 package uz.androdev.movies.model.model
 
+import androidx.recyclerview.widget.DiffUtil
 import org.threeten.bp.LocalDateTime
 
 /**
@@ -11,6 +12,18 @@ import org.threeten.bp.LocalDateTime
 
 data class Comment(
     val id: Long,
-    val comment: String,
+    val content: String,
     val createdAt: LocalDateTime
-)
+) {
+    companion object {
+        val DIFF_UTIL = object : DiffUtil.ItemCallback<Comment>() {
+            override fun areItemsTheSame(oldItem: Comment, newItem: Comment): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+            override fun areContentsTheSame(oldItem: Comment, newItem: Comment): Boolean {
+                return oldItem == newItem
+            }
+        }
+    }
+}

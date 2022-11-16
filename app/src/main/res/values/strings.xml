@@ -13,4 +13,9 @@
     <string name="fill_field">This field should not be empty</string>
     <string name="enter_valid_number">Please, enter a valid number</string>
     <string name="operation_failed">Operation Failed</string>
+    <string name="movie_info">Movie Info</string>
+    <string name="imdb">IMDb</string>
+    <string name="comments">Comments</string>
+    <string name="leave_comment">Leave comment</string>
+    <string name="write_your_comment">Write your comment</string>
 </resources>
