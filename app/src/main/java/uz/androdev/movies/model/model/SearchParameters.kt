@@ -11,7 +11,7 @@ import kotlinx.parcelize.Parcelize
  */
 
 @Parcelize
-data class SearchParameter(
+class SearchParameter(
     val query: String,
     val quantity: Int
 ) : Parcelable

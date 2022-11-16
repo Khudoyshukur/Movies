@@ -13,6 +13,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import uz.androdev.movies.R
+import uz.androdev.movies.data.error.InvalidQueryException
 import uz.androdev.movies.databinding.FragmentMoviesBinding
 import uz.androdev.movies.model.model.Movie
 import uz.androdev.movies.model.model.SearchParameter
@@ -97,7 +98,7 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
     }
 
     private fun FragmentMoviesBinding.bindMovies(
-        movies: Flow<PagingData<Movie>?>,
+        movies: Flow<PagingData<Movie>>,
         onToggleFavorite: (Movie) -> Unit,
         onMovieClicked: (Movie) -> Unit
     ) {
@@ -123,35 +124,33 @@ class MoviesFragment : BaseFragment<FragmentMoviesBinding>(FragmentMoviesBinding
             launch {
                 movies
                     .distinctUntilChanged()
-                    .collectLatest {
-                        if (it == null) {
-                            rvMovies.isVisible = false
-                            progressBar.isVisible = false
-                            tvMessage.isVisible = true
-                            tvMessage.text = getString(R.string.txt_no_search_parameters)
-                            return@collectLatest
-                        }
-
-                        adapter.submitData(it)
-                    }
+                    .collectLatest(adapter::submitData)
             }
 
             launch {
                 adapter.loadStateFlow.collectLatest { loadState ->
                     val refreshing = loadState.refresh is LoadState.Loading
+                    val error = loadState.refresh is LoadState.Error
                     val isEmpty = loadState.refresh is LoadState.NotLoading &&
                             loadState.append.endOfPaginationReached &&
                             adapter.itemCount == 0
-                    val error = loadState.refresh is LoadState.Error
 
                     rvMovies.isVisible = !isEmpty && !refreshing && !error
                     progressBar.isVisible = refreshing
-                    tvMessage.isVisible = isEmpty || error
+                    tvMessage.isVisible = error || isEmpty
 
-                    tvMessage.text = when {
-                        isEmpty -> getString(R.string.txt_no_movies)
-                        error -> getString(R.string.error_occurred_or_invalid_query)
-                        else -> ""
+                    if (isEmpty) {
+                        tvMessage.text = getString(R.string.txt_no_search_parameters)
+                    } else if (loadState.refresh is LoadState.Error) {
+                        val exception = (loadState.refresh as LoadState.Error).error
+                        tvMessage.text = when (exception) {
+                            is InvalidQueryException -> {
+                                getString(R.string.invalid_query)
+                            }
+                            else -> {
+                                getString(R.string.internet_error)
+                            }
+                        }
                     }
                 }
             }

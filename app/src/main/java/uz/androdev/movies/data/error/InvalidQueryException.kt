@@ -7,4 +7,4 @@ package uz.androdev.movies.data.error
  * Email: Khudoyshukur.Juraev.001@mail.ru
  */
 
-class ServerFailureException : RuntimeException()
+class InvalidQueryException : RuntimeException()

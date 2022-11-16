@@ -5,7 +5,10 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import com.google.gson.JsonParseException
 import uz.androdev.movies.data.db.AppDatabase
+import uz.androdev.movies.data.error.InvalidQueryException
+import uz.androdev.movies.data.error.NoInternetException
 import uz.androdev.movies.data.service.MovieService
 import uz.androdev.movies.model.entity.MovieRemoteKeyEntity
 import uz.androdev.movies.model.entity.MovieWithLikeAndCommentEntity
@@ -89,9 +92,15 @@ class MoviesMediator(
             }
 
             MediatorResult.Success(endOfPaginationReached = endOfPagination)
+        } catch (e: NullPointerException) {
+            // caused by !! mark
+            // so the query is invalid
+            MediatorResult.Error(InvalidQueryException())
+        } catch (e: JsonParseException) {
+            // server failure
+            MediatorResult.Error(InvalidQueryException())
         } catch (e: Throwable) {
-            e.printStackTrace()
-            MediatorResult.Error(e)
+            MediatorResult.Error(NoInternetException())
         }
     }
 
