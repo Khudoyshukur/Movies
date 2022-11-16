@@ -20,6 +20,7 @@ import uz.androdev.movies.model.mapper.toMovieDetails
 import uz.androdev.movies.model.model.Comment
 import uz.androdev.movies.model.model.Movie
 import uz.androdev.movies.model.model.MovieDetails
+import uz.androdev.movies.model.model.SearchParameter
 import javax.inject.Inject
 
 /**
@@ -35,12 +36,13 @@ class MovieRepositoryImpl @Inject constructor(
     private val appDatabase: AppDatabase,
     @IODispatcher private val dispatcher: CoroutineDispatcher
 ) : MovieRepository {
-    override fun getMovies(query: String, quantity: Int): Flow<PagingData<Movie>> {
-        val factory = { appDatabase.movieDao.getMovies(query = query) }
+    override fun getMovies(searchParameter: SearchParameter): Flow<PagingData<Movie>> {
+        val factory = { appDatabase.movieDao.getMovies(query = searchParameter.query) }
         val moviesMediator = MoviesMediator(
             appDatabase = appDatabase,
             movieService = movieService,
-            query = query
+            query = searchParameter.query,
+            numberOfPages = searchParameter.numberOfPages
         )
         val pager = Pager(
             config = PagingConfig(

@@ -25,7 +25,8 @@ import uz.androdev.movies.model.mapper.toMovieEntity
 class MoviesMediator(
     private val appDatabase: AppDatabase,
     private val movieService: MovieService,
-    private val query: String
+    private val query: String,
+    private val numberOfPages: Int
 ) : RemoteMediator<Int, MovieWithLikeAndCommentEntity>() {
     override suspend fun load(
         loadType: LoadType,
@@ -35,26 +36,16 @@ class MoviesMediator(
             val page = when (loadType) {
                 LoadType.REFRESH -> {
                     val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
-                    remoteKeys?.next?.minus(1) ?: 0
+                    remoteKeys?.next?.minus(1) ?: FIRST_PAGE_NUMBER
                 }
                 LoadType.PREPEND -> {
                     val remoteKeys = getRemoteKeyForFirstItem(state)
-                    // If remoteKeys is null, that means the refresh result is not in the database yet.
-                    // We can return Success with `endOfPaginationReached = false` because Paging
-                    // will call this method again if RemoteKeys becomes non-null.
-                    // If remoteKeys is NOT NULL but its prevKey is null, that means we've reached
-                    // the end of pagination for prepend.
                     val prevKey = remoteKeys?.prev
                         ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
                     prevKey
                 }
                 LoadType.APPEND -> {
                     val remoteKeys = getRemoteKeyForLastItem(state)
-                    // If remoteKeys is null, that means the refresh result is not in the database yet.
-                    // We can return Success with `endOfPaginationReached = false` because Paging
-                    // will call this method again if RemoteKeys becomes non-null.
-                    // If remoteKeys is NOT NULL but its prevKey is null, that means we've reached
-                    // the end of pagination for append.
                     val nextKey = remoteKeys?.next
                         ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
                     nextKey
@@ -63,18 +54,17 @@ class MoviesMediator(
 
             val movies = movieService.searchMovies(
                 query = query,
-                page = page + 1
+                page = page
             ).body()!!.movies
 
-            val endOfPagination = movies.isEmpty()
+            val endOfPagination = page >= numberOfPages || movies.isEmpty()
 
             appDatabase.withTransaction {
-                // clear articles from table
                 if (loadType == LoadType.REFRESH) {
                     appDatabase.movieDao.clearMovies()
                     appDatabase.movieRemoteKeysDao.clearRemoteKeys()
                 }
-                val prevKey = if (page == 0) null else page - 1
+                val prevKey = if (page == FIRST_PAGE_NUMBER) null else page - 1
                 val nextKey = if (endOfPagination) null else page + 1
                 val keys = movies.map {
                     MovieRemoteKeyEntity(
@@ -100,6 +90,7 @@ class MoviesMediator(
             // server failure
             MediatorResult.Error(InvalidQueryException())
         } catch (e: Throwable) {
+            // Most probably connection error
             MediatorResult.Error(NoInternetException())
         }
     }
@@ -107,37 +98,30 @@ class MoviesMediator(
     private suspend fun getRemoteKeyForLastItem(
         state: PagingState<Int, MovieWithLikeAndCommentEntity>
     ): MovieRemoteKeyEntity? {
-        // Get the last page that was retrieved, that contained items.
-        // From that last page, get the last item
-        return state.pages.lastOrNull() { it.data.isNotEmpty() }?.data?.lastOrNull()
-            ?.let { item ->
-                // Get the remote keys of the last item retrieved
-                appDatabase.movieRemoteKeysDao.remoteKeysMovieId(item.id)
-            }
+        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()
+            ?.let { item -> appDatabase.movieRemoteKeysDao.remoteKeysMovieId(item.id) }
     }
 
     private suspend fun getRemoteKeyForFirstItem(
         state: PagingState<Int, MovieWithLikeAndCommentEntity>
     ): MovieRemoteKeyEntity? {
-        // Get the first page that was retrieved, that contained items.
-        // From that first page, get the first item
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()
-            ?.let { item ->
-                // Get the remote keys of the first items retrieved
-                appDatabase.movieRemoteKeysDao.remoteKeysMovieId(item.id)
-            }
+            ?.let { item -> appDatabase.movieRemoteKeysDao.remoteKeysMovieId(item.id) }
     }
 
     private suspend fun getRemoteKeyClosestToCurrentPosition(
         state: PagingState<Int, MovieWithLikeAndCommentEntity>
     ): MovieRemoteKeyEntity? {
-        // The paging library is trying to load data after the anchor position
-        // Get the item closest to the anchor position
         return state.anchorPosition?.let { position ->
             state.closestItemToPosition(position)?.id?.let { itemId ->
                 appDatabase.movieRemoteKeysDao.remoteKeysMovieId(itemId)
             }
         }
+    }
+
+    companion object {
+        private const val FIRST_PAGE_NUMBER = 1
+        private const val TAG = "MoviesMediator"
     }
 }
 

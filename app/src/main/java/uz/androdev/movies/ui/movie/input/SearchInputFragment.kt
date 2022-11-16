@@ -10,9 +10,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import uz.androdev.movies.R
 import uz.androdev.movies.databinding.FragmentSearchInputBinding
 import uz.androdev.movies.model.model.SearchParameter
-import uz.androdev.movies.ui.constant.ExtraBundleName
 import uz.androdev.movies.ui.constant.ExtraBundleName.BUNDLE_SEARCH_PARAMETER
-import uz.androdev.movies.ui.constant.ExtraRequestKey
 import uz.androdev.movies.ui.constant.ExtraRequestKey.KEY_SEARCH_PARAMETERS
 
 /**
@@ -47,7 +45,7 @@ class SearchInputFragment : BottomSheetDialogFragment() {
     private fun initUI() = with(binding) {
         args.searchParameter?.let {
             inputTitle.editText?.setText(it.query)
-            inputQuantity.editText?.setText(it.quantity.toString())
+            inputNumberOfPages.editText?.setText(it.numberOfPages.toString())
         }
 
         btnApply.setOnClickListener {
@@ -62,16 +60,16 @@ class SearchInputFragment : BottomSheetDialogFragment() {
             return
         }
 
-        val quantity = inputQuantity.editText?.text.toString().toIntOrNull()
-        if (quantity == null) {
-            inputQuantity.error = getString(R.string.enter_valid_number)
+        val numberOfPages = inputNumberOfPages.editText?.text.toString().toIntOrNull()
+        if (numberOfPages == null) {
+            inputNumberOfPages.error = getString(R.string.enter_valid_number)
             return
         }
 
         val result = bundleOf(
             BUNDLE_SEARCH_PARAMETER to SearchParameter(
                 query = query.toString().trim(),
-                quantity = quantity
+                numberOfPages = numberOfPages
             )
         )
         activity?.supportFragmentManager?.setFragmentResult(KEY_SEARCH_PARAMETERS, result)

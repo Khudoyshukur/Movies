@@ -13,5 +13,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 class SearchParameter(
     val query: String,
-    val quantity: Int
+    val numberOfPages: Int
 ) : Parcelable

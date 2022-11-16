@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.Flow
 import uz.androdev.movies.model.model.Comment
 import uz.androdev.movies.model.model.Movie
 import uz.androdev.movies.model.model.MovieDetails
+import uz.androdev.movies.model.model.SearchParameter
 import java.io.IOException
 
 /**
@@ -18,7 +19,7 @@ const val COMMENTS_PAGE_SIZE = 10
 const val MOVIES_PAGE_SIZE = 10
 
 interface MovieRepository {
-    fun getMovies(query: String, quantity: Int): Flow<PagingData<Movie>>
+    fun getMovies(searchParameter: SearchParameter): Flow<PagingData<Movie>>
 
     fun getMovieDetails(movieId: String): Flow<MovieDetails?>
 

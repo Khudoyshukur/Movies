@@ -44,12 +44,12 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_quantity"
+        android:id="@+id/input_number_of_pages"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="@string/quantity"
+        android:hint="@string/number_of_pages"
         app:boxBackgroundColor="#e9e9e9"
         app:boxCornerRadiusBottomEnd="8dp"
         app:boxCornerRadiusBottomStart="8dp"
@@ -61,7 +61,7 @@
         app:layout_constraintTop_toBottomOf="@id/input_title">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/edittext_quantity"
+            android:id="@+id/edittext_number_of_pages"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:inputType="number" />
@@ -79,5 +79,5 @@
         app:cornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/input_quantity" />
+        app:layout_constraintTop_toBottomOf="@id/input_number_of_pages" />
 </androidx.constraintlayout.widget.ConstraintLayout>

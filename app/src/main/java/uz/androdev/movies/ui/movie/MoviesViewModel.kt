@@ -34,7 +34,7 @@ class MoviesViewModel @Inject constructor(
         if (it == null) {
             flowOf(PagingData.empty())
         } else {
-            getMoviesUseCase(it.query)
+            getMoviesUseCase(it)
         }
     }.cachedIn(viewModelScope)
 

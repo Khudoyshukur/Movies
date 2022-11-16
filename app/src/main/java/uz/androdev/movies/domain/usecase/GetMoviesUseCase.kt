@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import uz.androdev.movies.data.repository.MovieRepository
 import uz.androdev.movies.model.model.Movie
+import uz.androdev.movies.model.model.SearchParameter
 import javax.inject.Inject
 
 /**
@@ -16,7 +17,7 @@ import javax.inject.Inject
 class GetMoviesUseCase @Inject constructor(
     private val movieRepository: MovieRepository
 ) {
-    operator fun invoke(query: String): Flow<PagingData<Movie>> {
-        return movieRepository.getMovies(query = query, quantity = 10)
+    operator fun invoke(searchParameter: SearchParameter): Flow<PagingData<Movie>> {
+        return movieRepository.getMovies(searchParameter)
     }
 }
