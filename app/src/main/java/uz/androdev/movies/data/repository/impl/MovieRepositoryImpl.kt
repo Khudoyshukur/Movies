@@ -16,8 +16,10 @@ import uz.androdev.movies.model.entity.CommentEntity
 import uz.androdev.movies.model.entity.FavoriteEntity
 import uz.androdev.movies.model.mapper.toComment
 import uz.androdev.movies.model.mapper.toMovie
+import uz.androdev.movies.model.mapper.toMovieDetails
 import uz.androdev.movies.model.model.Comment
 import uz.androdev.movies.model.model.Movie
+import uz.androdev.movies.model.model.MovieDetails
 import javax.inject.Inject
 
 /**
@@ -55,6 +57,12 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getMovieDetails(movieId: String): Flow<MovieDetails?> {
+        return appDatabase.movieDao.getMoviesDetails(movieId).map {
+            withContext(dispatcher) { it?.toMovieDetails() }
+        }
+    }
+
     override suspend fun toggleFavourite(movieId: String) {
         val favouriteEntity = appDatabase.favoritesDao.getFavourite(movieId)
 
@@ -67,10 +75,10 @@ class MovieRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun insertComment(comment: String, movieId: String) {
+    override suspend fun insertComment(content: String, movieId: String) {
         val commentEntity = CommentEntity(
             movieId = movieId,
-            content = comment
+            content = content
         )
         appDatabase.commentsDao.insertComment(commentEntity)
     }

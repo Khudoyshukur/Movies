@@ -1,9 +1,11 @@
 package uz.androdev.movies.model.mapper
 
 import uz.androdev.movies.model.entity.CommentEntity
+import uz.androdev.movies.model.entity.MovieDetailsEntity
 import uz.androdev.movies.model.entity.MovieWithLikeAndCommentEntity
 import uz.androdev.movies.model.model.Comment
 import uz.androdev.movies.model.model.Movie
+import uz.androdev.movies.model.model.MovieDetails
 
 /**
  * Created by: androdev
@@ -29,5 +31,16 @@ fun MovieWithLikeAndCommentEntity.toMovie(): Movie {
         isLiked = isLiked,
         type = type,
         numberOfComments = numberOfComments
+    )
+}
+
+fun MovieDetailsEntity.toMovieDetails(): MovieDetails {
+    return MovieDetails(
+        id = id,
+        title = title,
+        posterUrl = poster,
+        releaseYear = year,
+        isLiked = isLiked,
+        type = type
     )
 }

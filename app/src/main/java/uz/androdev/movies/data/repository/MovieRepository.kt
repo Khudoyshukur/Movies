@@ -2,10 +2,9 @@ package uz.androdev.movies.data.repository
 
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
-import uz.androdev.movies.data.error.NoInternetException
-import uz.androdev.movies.data.error.ServerFailureException
 import uz.androdev.movies.model.model.Comment
 import uz.androdev.movies.model.model.Movie
+import uz.androdev.movies.model.model.MovieDetails
 import java.io.IOException
 
 /**
@@ -21,11 +20,13 @@ const val MOVIES_PAGE_SIZE = 10
 interface MovieRepository {
     fun getMovies(query: String, quantity: Int): Flow<PagingData<Movie>>
 
+    fun getMovieDetails(movieId: String): Flow<MovieDetails?>
+
     @Throws(IOException::class)
     suspend fun toggleFavourite(movieId: String)
 
     @Throws(IOException::class)
-    suspend fun insertComment(comment: String, movieId: String)
+    suspend fun insertComment(content: String, movieId: String)
 
     fun getComments(movieId: String): Flow<PagingData<Comment>>
 }

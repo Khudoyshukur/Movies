@@ -5,8 +5,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
+import uz.androdev.movies.model.entity.MovieDetailsEntity
 import uz.androdev.movies.model.entity.MovieEntity
 import uz.androdev.movies.model.entity.MovieWithLikeAndCommentEntity
+import uz.androdev.movies.model.model.MovieDetails
 
 /**
  * Created by: androdev
@@ -49,4 +52,24 @@ interface MovieDao {
     """
     )
     fun getMovies(query: String): PagingSource<Int, MovieWithLikeAndCommentEntity>
+
+    @Query(
+        """
+        SELECT 
+        movies.id, movies.title, movies.poster, 
+        movies.type, movies.year,
+        (
+            CASE
+            WHEN
+            (SELECT COUNT(*) FROM favorites WHERE movies.id=favorites.movie_id) > 0
+            THEN 1 ELSE 0
+            END
+        ) AS is_liked
+        FROM movies 
+        LEFT JOIN favorites
+        ON movies.id = favorites.movie_id
+        WHERE movies.id=:movieId LIMIT 1
+    """
+    )
+    fun getMoviesDetails(movieId: String): Flow<MovieDetailsEntity?>
 }
