@@ -70,7 +70,7 @@ class SearchInputFragment : BottomSheetDialogFragment() {
 
         val result = bundleOf(
             BUNDLE_SEARCH_PARAMETER to SearchParameter(
-                query = query.toString(),
+                query = query.toString().trim(),
                 quantity = quantity
             )
         )
